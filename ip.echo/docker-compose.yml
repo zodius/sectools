@@ -1,0 +1,16 @@
+version: "3"
+services:
+  ip-echo:
+    hostname: ip.echo
+    build: .
+    restart: always
+    expose:
+      - "8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ip-echo.rule=Host(`${domain}`) && Path(`/`)"
+    networks:
+      - traefik-public
+networks:
+  traefik-public:
+    external: true

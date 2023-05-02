@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik:v2.10
+    command:
+      - "--log.level=DEBUG"
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker"
+      - "--providers.docker.exposedByDefault=false"
+      - "--api"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    labels:
+      # dashboard
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.dashboard.rule=Host(`${domain}`) && PathPrefix(`/api`, `/dashboard`)'
+      - 'traefik.http.routers.dashboard.service=api@internal'
+      - 'traefik.http.routers.dashboard.middlewares=apidigest'
+      - 'traefik.http.middlewares.apidigest.basicauth.users=${scoreboard_auth}'
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true
