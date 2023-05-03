@@ -1,0 +1,22 @@
+version: "3"
+services:
+  static-server:
+    image: nginx
+    restart: always
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.static-server.rule=Host(`${domain}`) && (Path(`/favicon.ico`) || PathPrefix(`/static/`))"
+      - "traefik.http.services.static-server.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.static-files-stripprefix.stripprefix.prefixes=/static"
+      - "traefik.http.middlewares.gzip.compress=true"
+      - "traefik.http.routers.static-server.middlewares=gzip@docker,static-files-stripprefix@docker"
+
+    networks:
+      - traefik-public
+    volumes:
+      - ./files:/usr/share/nginx/html:ro
+networks:
+  traefik-public:
+    external: true

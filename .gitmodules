@@ -1,0 +1,3 @@
+[submodule "penta/penta"]
+	path = penta/penta
+	url = https://github.com/zodius/penta.git
